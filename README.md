@@ -111,6 +111,10 @@ After sending the start command, the serial output has one integer per line:
 
 On the wire, each sample is terminated with `\r\n`.
 
+The figure below shows an example visualization of the random integer stream received from the serial interface:
+
+![Example visualization of the random UART data stream](assets/data_sample.png)
+
 ## Limitations
 
 - The generated samples are random integers only.
