@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "Random UART Stream"
+type: software
+authors:
+  - family-names: "Silva"
+    given-names: "Tiago de Paula"
+    affiliation: "Distrito Tecnológico SENAI-SP"
+repository-code: "https://github.com/import-tiago/random-uart-stream"
+abstract: "Firmware for ESP32 that generates a synthetic random numeric stream over USB serial/UART for testing host-side serial acquisition, parsing, logging, plotting, and data-processing software."
+keywords:
+  - ESP32
+  - UART
+  - serial communication
+  - synthetic data
+  - embedded systems
+  - PlatformIO
+license: MIT
+version: "1.0.0"
+date-released: "2026-05-25"

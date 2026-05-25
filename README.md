@@ -1,160 +1,133 @@
 # Random UART Stream
 
-Firmware for an ESP32 development board that generates a continuous stream of random numeric data over the USB serial port. The stream is controlled by simple start and stop command bytes, making it useful for testing serial readers, data loggers, parsers, dashboards, plotting tools, or any host application that needs a predictable UART data source.
+## Project Overview
 
-## What It Does
+Random UART Stream is a minimal firmware for ESP32 development boards built with PlatformIO and the Arduino framework. It provides a synthetic and controllable numeric data source over the USB serial/UART interface.
 
-The firmware waits for commands on the serial port at `115200` baud:
+The firmware is intended for testing host-side software components that consume serial data, such as acquisition routines, parsers, data loggers, plotting tools, dashboards, and data-processing pipelines.
+
+## Purpose
+
+The project generates a continuous stream of random integer values only after receiving a start command through the serial port. The stream can be stopped with a second command byte.
+
+This makes the firmware useful as a lightweight test source when developing or validating software that depends on serial input, without requiring external sensors or measurement hardware.
+
+## Scientific Use
+
+This firmware was designed to provide a simple synthetic UART/USB serial data source for testing host-side acquisition software. It can be used to validate serial communication, parsing routines, logging pipelines, plotting tools, dashboards, and basic data-flow integration.
+
+The generated values are random integers and must not be interpreted as physiological, biomedical, EEG, or sensor-derived signals. The firmware does not simulate the spectral, temporal, statistical, or artifact characteristics of real EEG signals.
+
+In scientific contexts, Random UART Stream should be used only to validate serial communication, data formatting, acquisition flow, software integration, and reproducibility of host-side data handling. It must not be used to validate neurophysiological analysis methods or conclusions.
+
+Example article wording:
+
+> For validation of the host-side serial acquisition pipeline, a synthetic UART data source was implemented using an ESP32 development board. The firmware, named Random UART Stream, transmits random integer samples through the USB serial interface at 115200 baud, with start and stop commands controlling the stream. The generated data were used only to validate serial communication, parsing, logging, and integration of the Python acquisition software, and were not intended to represent real EEG signals.
+
+## Hardware Requirements
+
+- ESP32 development board compatible with the PlatformIO `esp32dev` target
+- USB cable for programming and serial communication
+- Host computer with PlatformIO installed
+
+## Firmware Behavior
+
+At startup, the firmware initializes the USB serial interface at `115200` baud, configures the built-in LED on GPIO `2`, and seeds the random number generator.
+
+The stream is inactive after reset. When the firmware receives the start command, it sends one random integer sample every `10 ms`. Each value is in the range `0` to `100`, inclusive.
+
+The built-in LED blinks every `100 ms` while streaming is active. When the stop command is received, streaming stops and the LED is turned off.
+
+## Serial Protocol
+
+| Parameter | Value |
+| --- | --- |
+| Baud rate | `115200` |
+| Data format | ASCII decimal integer |
+| Value range | `0` to `100` |
+| Line ending | `\r\n` |
+| Sample interval | `10 ms` |
+| Start command | `s` |
+| Stop command | `f` |
+
+Command bytes:
 
 | Command byte | ASCII character | Action |
 | --- | --- | --- |
-| `0x73` | `s` | Start streaming random values |
-| `0x66` | `f` | Stop streaming |
+| `0x73` | `s` | Start the random numeric stream |
+| `0x66` | `f` | Stop the stream |
 
-When streaming is enabled, the board sends one random integer from `0` to `100` every `10 ms`.
+Any other received byte is ignored.
 
-Each sample is sent as ASCII text followed by carriage return and line feed:
+## Build and Upload
 
-```text
-42\r\n
-7\r\n
-100\r\n
-```
-
-The built-in LED on GPIO `2` blinks every `100 ms` while the stream is active, giving a visual indication that data generation is running.
-
-## Hardware
-
-- ESP32 development board compatible with the PlatformIO `esp32dev` board target
-- USB cable for programming and serial communication
-
-The project uses the Arduino framework through PlatformIO.
-
-## Project Configuration
-
-The current PlatformIO environment is defined in `platformio.ini`:
+The PlatformIO environment is defined in `platformio.ini`:
 
 ```ini
 [env:esp32dev]
-platform = espressif32
+platform = espressif32@^6.9.0
 board = esp32dev
 framework = arduino
+monitor_speed = 115200
 ```
 
-## How to Build
-
-Install PlatformIO, then build the firmware from the project root:
+Build the firmware:
 
 ```sh
 pio run
 ```
 
-## How to Upload
-
-Connect the ESP32 over USB and upload the firmware:
+Upload it to the ESP32:
 
 ```sh
 pio run --target upload
 ```
 
-If PlatformIO does not detect the port automatically, specify it explicitly:
+If PlatformIO does not detect the serial port automatically, specify it explicitly:
 
 ```sh
 pio run --target upload --upload-port COM3
 ```
 
-Replace `COM3` with the serial port used by your board.
-
-## How to Use
-
-Open a serial monitor at `115200` baud:
+Open the serial monitor:
 
 ```sh
-pio device monitor --baud 115200
+pio device monitor
 ```
 
-Send the character `s` to start the stream. The board will begin printing random values:
+Send `s` to start streaming and `f` to stop streaming.
+
+## Example Output
+
+After sending the start command, the serial output has one integer per line:
 
 ```text
-15
-83
-4
-61
+42
+7
+100
+18
+63
 ```
 
-Send the character `f` to stop the stream.
+On the wire, each sample is terminated with `\r\n`.
 
-Most serial terminal programs can be used as long as they allow sending raw characters or text over the serial port. Examples include PlatformIO Serial Monitor, Arduino Serial Monitor, PuTTY, Tera Term, RealTerm, or a custom Python/Node/C# application.
+## Limitations
 
-## Serial Protocol
+- The generated samples are random integers only.
+- The data do not represent EEG, physiological, biomedical, or sensor-derived signals.
+- The firmware does not model EEG frequency bands, waveform morphology, artifacts, noise color, temporal dynamics, electrode behavior, or statistical properties of real recordings.
+- The firmware validates host-side serial communication and data-flow integration only.
+- The stream starts only after the host sends the `s` command.
+- The default firmware targets the ESP32 `esp32dev` board profile.
 
-- Baud rate: `115200`
-- Data format: ASCII decimal integer
-- Value range: `0` to `100`
-- Line ending: `\r\n`
-- Sample interval: `10 ms`
-- Start command: `s`
-- Stop command: `f`
+## How to Cite
 
-The firmware checks for incoming serial bytes continuously. Any received `s` byte enables streaming, and any received `f` byte disables it. Other bytes are ignored.
+Provisional IEEE citation:
 
-## Example Host-Side Test
+T. P. Silva, "Random UART Stream," Version 1.0.0, GitHub repository, 2026. [Online]. Available: https://github.com/import-tiago/random-uart-stream
 
-Using Python and `pyserial`, you can start the stream, read a few lines, and stop it again:
+If a DOI is generated through Zenodo or another archival service, prefer citing the archived DOI version associated with the specific software release used in the study.
 
-```python
-import serial
-import time
+## License
 
-port = "COM3"  # Change this to your ESP32 serial port
-
-with serial.Serial(port, 115200, timeout=1) as ser:
-    ser.write(b"s")
-
-    start = time.time()
-    while time.time() - start < 2:
-        line = ser.readline().decode("ascii", errors="replace").strip()
-        if line:
-            print(line)
-
-    ser.write(b"f")
-```
-
-## Customization
-
-The main behavior is controlled by constants in `src/main.cpp`:
-
-```cpp
-#define START_STREAM_COMMAND 's'
-#define STOP_STREAM_COMMAND 'f'
-#define STREAM_INTERVAL_MS 10
-#define LED_BLINK_INTERVAL_MS 100
-```
-
-You can change these values to use different command bytes, adjust the sample rate, or modify the LED blink speed.
-
-The generated random value range is defined here:
-
-```cpp
-Serial.print(random(0, 101));
-```
-
-For example, change it to `random(0, 1024)` to generate values from `0` to `1023`.
-
-## Repository Structure
-
-```text
-.
-├── platformio.ini
-├── src/
-│   └── main.cpp
-├── include/
-├── lib/
-└── test/
-```
-
-## Notes
-
-- The stream is not started automatically after reset. A start command must be sent first.
-- The random generator is seeded with `micros()` during startup.
-- `Serial.flush()` is called after each sample to wait for outgoing serial data to be transmitted.
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
