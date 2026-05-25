@@ -1,5 +1,7 @@
 # Random UART Stream
 
+[![DOI](https://zenodo.org/badge/1249150268.svg)](https://doi.org/10.5281/zenodo.20379418)
+
 ## Project Overview
 
 Random UART Stream is a minimal firmware for ESP32 development boards built with PlatformIO and the Arduino framework. It provides a synthetic and controllable numeric data source over the USB serial/UART interface.
@@ -128,7 +130,7 @@ The figure below shows an example visualization of the random integer stream rec
 
 Recommended citation:
 
-T. P. Silva, "Random UART Stream," Version 1.0.0, GitHub repository, 2026. [Online]. Available: https://github.com/import-tiago/random-uart-stream
+T. P. Silva, "Random UART Stream," Version 1.0.0, Zenodo, 2026. doi: 10.5281/zenodo.20379418.
 
 ## License
 
