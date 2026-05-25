@@ -126,11 +126,9 @@ The figure below shows an example visualization of the random integer stream rec
 
 ## How to Cite
 
-Provisional IEEE citation:
+Recommended citation:
 
 T. P. Silva, "Random UART Stream," Version 1.0.0, GitHub repository, 2026. [Online]. Available: https://github.com/import-tiago/random-uart-stream
-
-If a DOI is generated through Zenodo or another archival service, prefer citing the archived DOI version associated with the specific software release used in the study.
 
 ## License
 
